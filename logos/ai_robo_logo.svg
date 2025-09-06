@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#FFE632"/>
+<stop offset="100%" stop-color="#FFCC00"/>
+</linearGradient>
+</defs>
+<rect width="512" height="512" rx="128" fill="#000000"/>
+<circle cx="256" cy="256" r="176" fill="#1E1E1E" stroke="#FFFFFF" stroke-width="8"/>
+<!-- Antenna -->
+<line x1="256" y1="110" x2="256" y2="150" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+<circle cx="256" cy="100" r="10" fill="url(#g)" stroke="#FFFFFF" stroke-width="4"/>
+<!-- Head -->
+<rect x="156" y="180" width="200" height="180" rx="40" fill="#2A2A2A" stroke="#FFFFFF" stroke-width="8"/>
+<!-- Eyes -->
+<circle cx="206" cy="250" r="20" fill="#FFFFFF"/>
+<circle cx="306" cy="250" r="20" fill="#FFFFFF"/>
+<!-- Smile -->
+<path d="M206 300 Q256 340 306 300" fill="none" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
+<!-- Side “ears” -->
+<rect x="140" y="220" width="16" height="80" rx="8" fill="#FFFFFF"/>
+<rect x="356" y="220" width="16" height="80" rx="8" fill="#FFFFFF"/>
+<!-- Small AI tag -->
+<rect x="232" y="342" width="48" height="28" rx="6" fill="url(#g)"/>
+<text x="256" y="362" font-family="Lato, Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle" fill="#000">AI</text>
+</svg>

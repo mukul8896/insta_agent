@@ -1,0 +1,17 @@
+openai
+requests
+pyotp
+logzero
+pandas
+ta
+scikit-learn
+bs4
+lxml
+python-telegram-bot
+# LangChain ecosystem
+langchain
+langchain-core
+langchain-community
+#post generator
+pillow
+cairosvg
