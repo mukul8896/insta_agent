@@ -28,6 +28,7 @@ def send_image_to_telegram(image_path, caption='Your image post is ready!',token
     """
     Sends an image file to a specified Telegram chat.
     """
+    image_path = os.path.abspath(image_path)
     url = f'https://api.telegram.org/bot{token}/sendPhoto'
     with open(image_path, 'rb') as image_file:
         files = {'photo': image_file}
