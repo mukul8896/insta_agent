@@ -33,12 +33,7 @@ jobs:
         env:
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          SMART_API_CLIENT_CODE: ${{ secrets.SMART_API_CLIENT_CODE }}
-          SMART_API_KEY: ${{ secrets.SMART_API_KEY }}
-          SMART_API_PASSWORD: ${{ secrets.SMART_API_PASSWORD }}
-          SMART_API_TOTP: ${{ secrets.SMART_API_TOTP }}
           TELEGRAM_BOT_CHAT_ID: ${{ secrets.TELEGRAM_BOT_CHAT_ID }}
-          TELEGRAM_MARKETBOT_TOKEN: ${{ secrets.TELEGRAM_MARKETBOT_TOKEN }}
           TELEGRAM_NEWSBOT_TOKEN: ${{ secrets.TELEGRAM_NEWSBOT_TOKEN }}
           TELEGRAM_QUOTEBOT_TOKEN: ${{ secrets.TELEGRAM_QUOTEBOT_TOKEN }}
           NEWS_QUERY: ${{ github.event.inputs.query }}
