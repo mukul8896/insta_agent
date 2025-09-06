@@ -37,3 +37,9 @@ jobs:
           TELEGRAM_NEWSBOT_TOKEN: ${{ secrets.TELEGRAM_NEWSBOT_TOKEN }}
           TELEGRAM_QUOTEBOT_TOKEN: ${{ secrets.TELEGRAM_QUOTEBOT_TOKEN }}
         run: python quote_post_generator.py
+      - name: Upload posts folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: posts
+          path: posts/
+
