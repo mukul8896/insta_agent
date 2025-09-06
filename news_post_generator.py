@@ -301,7 +301,6 @@ def create_instagram_post(post_count, news_item, analysis_result):
     os.makedirs("posts", exist_ok=True)
     filename = f"posts/post{post_count}_{news_item.get('source','source')}.png"
     final_img.save(filename)
-    print(f"DEBUG: Image saved at path: {filename}")
     return filename
 
 
@@ -309,13 +308,14 @@ def generate_caption(news_item, analysis_result):
     pointers_text = "\n".join([f"• {p}" for p in analysis_result['pointers']])
     
     return f"""{analysis_result['heading']}
-        {pointers_text}
+🔗 Read more: {news_item['url']}
+📌 Source: {news_item['source']}
 
-        🔗 Read more: {news_item['url']}
-        📌 Source: {news_item['source']}
+{pointers_text}
 
-        {analysis_result['hashtags']}
-    """
+Hashtags:
+{analysis_result['hashtags']}
+"""
 
 # ----------------- Async main (unchanged) -----------------
 # In your main function
@@ -344,14 +344,9 @@ async def main():
                 print(f"INFO: {analyzed_news}")
                 post_file = create_instagram_post(post_count, full_article, analyzed_news)
                 caption = generate_caption(news_item=full_article, analysis_result=analyzed_news)
-                print(f"DEBUG: Attempting to send file from path: {post_file}")
-                if os.path.exists(post_file):
-                    print("DEBUG: File exists!")
-                else:
-                    print("DEBUG: File does NOT exist. Check previous steps.")
                 send_image_to_telegram(f"{post_file}", f"{caption}", telegram_token)
                 post_count += 1
-            if post_count == 1:
+            if post_count == 5:
                 break
     except Exception as e:
         print(f"ERROR : {e}")
