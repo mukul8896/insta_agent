@@ -168,3 +168,4 @@ order_data/
 key.txt
 trade_logs/*.log
 posts/*.png
+temp.py
