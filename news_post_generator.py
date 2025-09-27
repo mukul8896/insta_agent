@@ -97,20 +97,27 @@ def measure_bullets(draw, points, font, max_width, line_spacing=12, between_bull
 
 def draw_bullet_paragraph(final_img, draw, x, y, wrapped_points, font, fills, max_width, 
                          bullet="• ", line_spacing=12, between_bullets=25):
-    """Draw bullets with cloud-like shadow and proper spacing."""
+    """Draw bullets with cloud-like shadow and inline yellow text for {...} parts.
+       If a whole pointer is inside {}, the whole bullet + text becomes yellow.
+    """
     bullet_width = draw.textlength(bullet, font=font)
     cur_y = y
-    
+
     # Normalize fills to a list matching number of bullets
     if isinstance(fills, (list, tuple)):
         fills_list = list(fills)
     else:
         fills_list = [fills] * len(wrapped_points)
-    
+
     for bi, lines in enumerate(wrapped_points):
-        color = fills_list[bi] if bi < len(fills_list) else fills_list[-1]
+        base_color = fills_list[bi] if bi < len(fills_list) else fills_list[-1]
         indent_x = x + bullet_width
-        
+
+        # Check if ALL lines of this bullet are enclosed in {}
+        is_full_highlight = False
+        if len(lines) == 1 and lines[0].startswith("{") and lines[0].endswith("}"):
+            is_full_highlight = True
+
         for li, line in enumerate(lines):
             if li == 0:
                 text_x = x
@@ -118,33 +125,63 @@ def draw_bullet_paragraph(final_img, draw, x, y, wrapped_points, font, fills, ma
             else:
                 text_x = indent_x
                 full_line = line
-            
-            # Cloud-like shadow layer
-            shadow_layer = Image.new("RGBA", final_img.size, (0, 0, 0, 0))
-            shadow_draw = ImageDraw.Draw(shadow_layer)
-            
-            for offset in range(4):
-                shadow_draw.text(
-                    (text_x + 4 + offset, cur_y + 4 + offset),
-                    full_line,
-                    font=font,
-                    fill=(0, 0, 0, 200)
-                )
-            
-            shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(6))
-            final_img.alpha_composite(shadow_layer)
-            
-            # Actual text
-            draw.text((text_x, cur_y), full_line, font=font, fill=color)
-            
-            bbox = draw.textbbox((0, 0), line, font=font)
+
+            # Case 1: Whole pointer highlight
+            if is_full_highlight:
+                clean_text = full_line.replace("{", "").replace("}", "")
+                segments = [(clean_text, (255, 223, 0))]  # all yellow
+            else:
+                # Case 2: Inline highlight {inside text}
+                segments = []
+                temp = ""
+                inside_braces = False
+                for ch in full_line:
+                    if ch == "{":
+                        if temp:
+                            segments.append((temp, base_color))  # normal
+                            temp = ""
+                        inside_braces = True
+                    elif ch == "}":
+                        if temp:
+                            segments.append((temp, (255, 223, 0)))  # yellow
+                            temp = ""
+                        inside_braces = False
+                    else:
+                        temp += ch
+                if temp:
+                    segments.append((temp, (255, 223, 0) if inside_braces else base_color))
+
+            # Draw shadow + colored text segment by segment
+            seg_x = text_x
+            for text_seg, seg_color in segments:
+                # Shadow
+                shadow_layer = Image.new("RGBA", final_img.size, (0, 0, 0, 0))
+                shadow_draw = ImageDraw.Draw(shadow_layer)
+                for offset in range(4):
+                    shadow_draw.text(
+                        (seg_x + 4 + offset, cur_y + 4 + offset),
+                        text_seg,
+                        font=font,
+                        fill=(0, 0, 0, 200)
+                    )
+                shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(6))
+                final_img.alpha_composite(shadow_layer)
+
+                # Actual text
+                draw.text((seg_x, cur_y), text_seg, font=font, fill=seg_color)
+
+                seg_x += draw.textlength(text_seg, font=font)
+
+            bbox = draw.textbbox((0, 0), full_line, font=font)
             line_h = bbox[3] - bbox[1]
             cur_y += line_h + line_spacing
-        
+
         if bi < len(wrapped_points) - 1:
             cur_y += between_bullets
-    
+
     return cur_y
+
+
 
 # ----------------- Calculate dynamic layout -----------------
 def calculate_dynamic_layout(draw, heading, pointers, fonts_config, dimensions):
@@ -188,7 +225,7 @@ def calculate_dynamic_layout(draw, heading, pointers, fonts_config, dimensions):
     actual_heading_height = multiline_height(draw, heading_lines, heading_font, 15)
     
     # Space between heading and bullets
-    heading_bullet_gap = max(25, int(available_height * 0.05))
+    heading_bullet_gap = max(25, int(available_height * 0.08))
     
     # Calculate remaining space for bullets
     remaining_height = available_height - actual_heading_height - heading_bullet_gap
@@ -446,7 +483,8 @@ def generate_caption(news_item, analysis_result):
 
 {pointers_text}
 
-Hashtags: {analysis_result['hashtags']}
+Hashtags: 
+{analysis_result['hashtags']}
 """
 
 # ----------------- Async main -----------------
@@ -454,7 +492,7 @@ async def main():
     telegram_token = os.getenv("TELEGRAM_NEWSBOT_TOKEN")
     try:
         # Fetch articles
-        news_data = fetch_newapi_articles(query=os.getenv("NEWS_QUERY", "Geopolitics"))
+        news_data = fetch_newapi_articles(query="BJP")
         
         # Use LLM to select viral articles
         articles_for_llm = json.dumps([{"title": n['title'], "url": n['url']} for n in news_data])

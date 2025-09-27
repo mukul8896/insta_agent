@@ -135,9 +135,53 @@ def fetch_newapi_articles(query=None):
     """
     all_articles = []
 
+    # Relevant domains (Indian + Global politics + Stock market + Geopolitics)
+    relevant_domains = ",".join([
+        # National Indian News
+        # "timesofindia.indiatimes.com",
+        # "thehindu.com",
+        "hindustantimes.com",
+        # "indianexpress.com",
+        # "ndtv.com",
+        # "dnaindia.com",
+        # "firstpost.com",
+        # "oneindia.com",
+        # "deccanherald.com",
+        # "tribuneindia.com",
+        # "asianage.com",
+        # "newindianexpress.com",
+        # "telegraphindia.com",
+
+        # # Indian Business & Stock Market
+        # "moneycontrol.com",
+        # "economictimes.indiatimes.com",
+        # "livemint.com",
+        # "business-standard.com",
+
+        # # Regional / Opinionated pro-India
+        # "freepressjournal.in",
+        # "greaterkashmir.com",
+        # "swarajyamag.com",
+        # "organiser.org"
+
+        # # Global News / Geopolitics
+        # "reuters.com",
+        # "bbc.com",
+        # "cnn.com",
+        # "aljazeera.com",
+        # "theguardian.com",
+        # "nytimes.com",
+        # "bloomberg.com",
+        # "cnbc.com",
+        # "ft.com",  # Financial Times
+        # "foreignpolicy.com",
+        # "foreignaffairs.com"
+    ])
+
     params = {
         "q": query,
         "language": "en",
+        # "domains": relevant_domains,
         "from": (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d"),
         "sortBy": "popularity",
         "apiKey": os.getenv("NEWS_API_KEY")
@@ -150,7 +194,7 @@ def fetch_newapi_articles(query=None):
         for article in data.get("articles", []):
             all_articles.append({
                 "title": article.get("title"),
-                # "description": article.get("description"),
+                "description": article.get("description"),
                 "url": article.get("url"),
                 "article_text": fetch_article_text(article.get("url")),
                 "urlToImage": article.get("urlToImage"),
